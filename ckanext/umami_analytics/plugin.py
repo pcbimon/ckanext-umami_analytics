@@ -14,8 +14,8 @@ class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
         toolkit.add_template_directory(config_, "templates")
         toolkit.add_public_directory(config_, "public")
         toolkit.add_resource("assets", "umami_analytics")
-        umami_instance = os.getenv('UMAMI_INSTANCE', '')
-        site_id = os.getenv('UMAMI_SITE_ID', '')
+        umami_instance = os.getenv('CKAN_UMAMI_ANALYTICS_URL', '')
+        site_id = os.getenv('CKAN_UMAMI_ANALYTICS_SITE_ID', '')
         
         # Inject the script into the <head> section
         script_tag = f'<script defer src="{umami_instance}/script.js" data-website-id="{site_id}"></script>'
