@@ -1,0 +1,14 @@
+# umami_analytics-js:
+#   filter: rjsmin
+#   output: ckanext-umami_analytics/%(version)s-umami_analytics.js
+#   contents:
+#     - js/umami_analytics.js
+#   extra:
+#     preload:
+#       - base/main
+
+# umami_analytics-css:
+#   filter: cssrewrite
+#   output: ckanext-umami_analytics/%(version)s-umami_analytics.css
+#   contents:
+#     - css/umami_analytics.css
