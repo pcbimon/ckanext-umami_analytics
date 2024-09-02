@@ -1,6 +1,7 @@
-{% extends "package/read.html" %}
-{% block content %}
-    <a href="{{ h.url_for(controller='package', action='read', id=package.name) }}" data-umami-event="view-dataset">
-        {{ package.title }}
-    </a>
+{% extends "package/page_heading.html" %}
+{{ super() }}
+{% block page_heading %}
+    <h1 href="#" data-umami-event="view-dataset">
+        {{ h.dataset_display_name(pkg) }}
+    </h1>
 {% endblock %}
