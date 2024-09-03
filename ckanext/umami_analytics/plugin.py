@@ -39,13 +39,16 @@ class DownloadTrackingMiddleware(object):
         try:
             resource_id = environ.get('ckan.resource_id')
             user = environ.get('REMOTE_USER', 'anonymous')
-            # Check self.token is set
-            if not self.token:
+            self.token = os.getenv('CKANEXT_UMAMI_ANALYTICS_TOKEN', '')
+            # Check self.token is not empty
+            if self.token == '':
                 # check if username and password are set
                 if not self.username or not self.password:
-                    raise Exception('CKAN_UMAMI_ANALYTICS_USERNAME and CKAN_UMAMI_ANALYTICS_PASSWORD must be set in the environment')
+                    raise Exception('CKANEXT_UMAMI_ANALYTICS_USERNAME and CKANEXT_UMAMI_ANALYTICS_PASSWORD must be set in the environment')
                 # Get the token
                 self.token = authenTracking(self.username, self.password, self.umami_instance)
+                # set token to environment
+                os.environ['CKANEXT_UMAMI_ANALYTICS_TOKEN'] = self.token
             else:
                 # verify token
                 if not verifyToken(self.token, self.umami_instance):
@@ -96,17 +99,18 @@ class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
         toolkit.add_template_directory(config_, "templates")
         toolkit.add_public_directory(config_, "public")
         toolkit.add_resource("assets", "umami_analytics")
-        self.umami_instance = os.getenv('CKAN_UMAMI_ANALYTICS_URL', '')
-        self.site_id = os.getenv('CKAN_UMAMI_ANALYTICS_SITE_ID', '')
-        self.username = os.getenv('CKAN_UMAMI_ANALYTICS_USERNAME', '')
-        self.password = os.getenv('CKAN_UMAMI_ANALYTICS_PASSWORD', '')
-        self.site_url = os.getenv('CKAN_SITE_URL', '')
+        self.umami_instance = os.getenv('CKANEXT_UMAMI_ANALYTICS_URL', '')
+        self.site_id = os.getenv('CKANEXT_UMAMI_ANALYTICS_SITE_ID', '')
+        self.username = os.getenv('CKANEXT_UMAMI_ANALYTICS_USERNAME', '')
+        self.password = os.getenv('CKANEXT_UMAMI_ANALYTICS_PASSWORD', '')
+        self.site_url = os.getenv('CKANEXT_SITE_URL', '')
         if not self.umami_instance or not self.site_id:
-            raise Exception('CKAN_UMAMI_ANALYTICS_URL and CKAN_UMAMI_ANALYTICS_SITE_ID must be set in the environment')
+            raise Exception('CKANEXT_UMAMI_ANALYTICS_URL and CKANEXT_UMAMI_ANALYTICS_SITE_ID must be set in the environment')
         # if username and password are set, get the token
         if self.username and self.password:
             token = authenTracking(self.username, self.password, self.umami_instance)
-            self.token = token
+            # set token to environment
+            os.environ['CKANEXT_UMAMI_ANALYTICS_TOKEN'] = token
             log.info('Umami Analytics token is set')
         
         # Inject the script into the <head> section
