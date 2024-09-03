@@ -38,7 +38,7 @@ class DownloadTrackingMiddleware(object):
         return self.app(environ, start_response)    
     def track_download(self, environ: Any):
         try:
-            log.info(self)
+            log.info(environ)
             headers = {
                 'User-Agent': environ.get('HTTP_USER_AGENT', ''),
             }
