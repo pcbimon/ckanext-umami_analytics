@@ -73,10 +73,13 @@ class DownloadTrackingMiddleware(object):
             data = {
                 "payload": {
                     "hostname": self.site_url,
-                    "title": "download",
+                    "language": "en-US",
+                    "referrer": "",
+                    "screen": "1920x1080",
+                    "title": "resource-download",
                     "url": download_path,
                     "website": self.site_id,
-                    "name": "download-resource",
+                    "name": "resource-download",
                     "data": {
                         "dataset-id": dataset_id,
                         "resource-id": resource_id,

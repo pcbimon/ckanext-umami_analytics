@@ -2,7 +2,7 @@
 {% block package_description %}
     {{ super() }}
     <div 
-    data-umami-event="view-dataset" 
+    data-umami-event="dataset-view" 
     data-umami-event-dataset_name="{{ h.dataset_display_name(pkg) }}"
     data-umami-event-dataset_id="{{ pkg.id }}"
     ></div>

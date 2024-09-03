@@ -1,7 +1,7 @@
 {% ckan_extends %}
 {% block resource_item_title %}
 <a 
-data-umami-event="view-resource" 
+data-umami-event="resource-view" 
    data-umami-event-dataset-name="{{ h.dataset_display_name(pkg) }}"
    data-umami-event-dataset-id="{{ pkg.id }}"
     data-umami-event-resource-name="{{ h.resource_display_name(res) | truncate(50) }}"
