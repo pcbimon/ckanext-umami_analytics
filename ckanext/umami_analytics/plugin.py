@@ -40,10 +40,13 @@ class DownloadTrackingMiddleware(object):
             resource_id = environ.get('ckan.resource_id')
             user = environ.get('REMOTE_USER', 'anonymous')
             self.token = os.getenv('CKANEXT_UMAMI_ANALYTICS_TOKEN', '')
+            self.umami_instance = os.getenv('CKANEXT_UMAMI_ANALYTICS_URL', '')
+            self.username = os.getenv('CKANEXT_UMAMI_ANALYTICS_USERNAME', '')
+            self.password = os.getenv('CKANEXT_UMAMI_ANALYTICS_PASSWORD', '')
             # Check self.token is not empty
             if self.token == '':
-                # check if username and password are set
-                if not self.username or not self.password:
+                # check if username and password are not empty
+                if self.username == '' or self.password == '':
                     raise Exception('CKANEXT_UMAMI_ANALYTICS_USERNAME and CKANEXT_UMAMI_ANALYTICS_PASSWORD must be set in the environment')
                 # Get the token
                 self.token = authenTracking(self.username, self.password, self.umami_instance)
