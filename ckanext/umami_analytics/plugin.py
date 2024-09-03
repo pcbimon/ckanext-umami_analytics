@@ -6,10 +6,28 @@ import os
 import logging
 import requests
 log = logging.getLogger(__name__)
+def authenTracking(username: AnyStr, password: AnyStr, umami_instance: AnyStr) -> AnyStr:
+    login_data = {
+        'username': username,
+        'password': password
+    }
+    response = requests.post(f'{umami_instance}/api/auth/login', json=login_data)
+    token = response.json().get('token')
+    if not token:
+        raise Exception('Failed to get token from Umami Analytics')
+    return token
 
-class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
+def verifyToken(token: AnyStr, umami_instance: AnyStr) -> bool:
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+    response = requests.get(f'{umami_instance}/api/auth/verify', headers=headers)
+    return response.status_code == 200
+class DownloadTrackingMiddleware(object):
+    def __init__(self, app, config): # type: ignore
+        self.app = app
+        self.config = config
 
-    plugins.implements(plugins.IConfigurer)
     def __call__(self, environ: Any, start_response: Any) -> Any:
         path = environ.get('PATH_INFO', '')
         if path.startswith('/dataset') and '/resource/' and '/download/' in path:
@@ -25,12 +43,12 @@ class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
                 if not self.username or not self.password:
                     raise Exception('CKAN_UMAMI_ANALYTICS_USERNAME and CKAN_UMAMI_ANALYTICS_PASSWORD must be set in the environment')
                 # Get the token
-                self.token = self.authenTracking(self.username,self.password)
+                self.token = authenTracking(self.username, self.password, self.umami_instance)
             else:
                 # verify token
-                if not self.verifyToken(self.token):
+                if not verifyToken(self.token, self.umami_instance):
                     # get the token again
-                    self.token = self.authenTracking(self.username,self.password)
+                    self.token = authenTracking(self.username, self.password, self.umami_instance)
 
             # get token
             token = self.token
@@ -62,27 +80,10 @@ class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
             log.info(f"Download tracked for resource: {resource_id} by user: {user}")
         except Exception as e:
             log.error(f"Failed to track download: {e}")
-    def authenTracking(self,username:AnyStr,password:AnyStr)->AnyStr:
-        login_data = {
-                'username': self.username,
-                'password': self.password
-            }
-        response = requests.post(f'{self.umami_instance}/api/auth/login', json=login_data)
-        token = response.json().get('token')
-        if not token:
-            raise Exception('Failed to get token from Umami Analytics')
-        # Add the token to the config
-        return token
-    def verifyToken(self,token:AnyStr)->bool:
-        # /api/auth/verify
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
-        response = requests.get(f'{self.umami_instance}/api/auth/verify',headers=headers)
-        if response.status_code == 200:
-            return True
-        else:    
-            return False
+
+class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
+
+    plugins.implements(plugins.IConfigurer)
     # IConfigurer
 
     def update_config(self, config_: 'CKANConfig'):
@@ -98,7 +99,7 @@ class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
             raise Exception('CKAN_UMAMI_ANALYTICS_URL and CKAN_UMAMI_ANALYTICS_SITE_ID must be set in the environment')
         # if username and password are set, get the token
         if self.username and self.password:
-            token = self.authenTracking(self.username,self.password)
+            token = authenTracking(self.username, self.password, self.umami_instance)
             self.token = token
         
         # Inject the script into the <head> section
