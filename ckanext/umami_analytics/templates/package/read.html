@@ -3,7 +3,7 @@
     {{ super() }}
     <div 
     data-umami-event="view-dataset" 
-    data-umami-dataset-name="{{ h.dataset_display_name(pkg) }}"
-    data-umami-dataset-id="{{ pkg.id }}"
+    data-umami-event-dataset-name="{{ h.dataset_display_name(pkg) }}"
+    data-umami-event-dataset-id="{{ pkg.id }}"
     ></div>
 {% endblock %}
