@@ -1,6 +1,9 @@
 {% ckan_extends %}
 {% block page_heading %}
-    <h1 href="#" data-umami-event="view-dataset">
-        {{ h.dataset_display_name(pkg) }}
-    </h1>
+    {{ super() }}
+    <div 
+    data-umami-event="view-dataset" 
+    data-umami-dataset-name="{{ h.dataset_display_name(pkg) }}"
+    data-umami-dataset-id="{{ pkg.id }}"
+    ></div>
 {% endblock %}
