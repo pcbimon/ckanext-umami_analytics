@@ -32,11 +32,14 @@ class DownloadTrackingMiddleware(object):
 
     def __call__(self, environ: Any, start_response: Any) -> Any:
         path = environ.get('PATH_INFO', '')
+        # Track download event
         if path.startswith('/dataset') and '/resource/' and '/download/' in path:
             self.track_download(environ)
         return self.app(environ, start_response)    
     def track_download(self, environ: Any):
         try:
+            log.info(environ)
+            headers = environ.get('HTTP_HEADERS', '')
             resource_id = environ.get('ckan.resource_id')
             user = environ.get('REMOTE_USER', 'anonymous')
             self.token = os.getenv('CKANEXT_UMAMI_ANALYTICS_TOKEN', '')
@@ -69,7 +72,7 @@ class DownloadTrackingMiddleware(object):
             log.info('Tracking download')
             log.info(data)
             # Make the API call
-            response = requests.post(self.umami_instance+'/api/send',json=data)
+            response = requests.post(self.umami_instance+'/api/send',json=data, headers=headers)
             log.info(response.json())
             response.raise_for_status()
             log.info(f"Download tracked for resource: {resource_id} by user: {user}")
