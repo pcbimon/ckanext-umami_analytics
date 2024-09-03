@@ -44,6 +44,7 @@ class DownloadTrackingMiddleware(object):
             self.username = os.getenv('CKANEXT_UMAMI_ANALYTICS_USERNAME', '')
             self.password = os.getenv('CKANEXT_UMAMI_ANALYTICS_PASSWORD', '')
             self.site_id = os.getenv('CKANEXT_UMAMI_ANALYTICS_SITE_ID', '')
+            self.site_url = os.getenv('CKANEXT_SITE_URL', '')
             # Check self.token is not empty
             if self.token == '':
                 # check if username and password are not empty
