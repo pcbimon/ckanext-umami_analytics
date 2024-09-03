@@ -44,7 +44,7 @@ class DownloadTrackingMiddleware(object):
             self.username = os.getenv('CKANEXT_UMAMI_ANALYTICS_USERNAME', '')
             self.password = os.getenv('CKANEXT_UMAMI_ANALYTICS_PASSWORD', '')
             self.site_id = os.getenv('CKANEXT_UMAMI_ANALYTICS_SITE_ID', '')
-            self.site_url = os.getenv('CKANEXT_SITE_URL', '')
+            self.site_url = os.getenv('CKAN_SITE_URL', '').replace('http://', '').replace('https://', '')
             # Check self.token is not empty
             if self.token == '':
                 # check if username and password are not empty
@@ -111,7 +111,7 @@ class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
         self.site_id = os.getenv('CKANEXT_UMAMI_ANALYTICS_SITE_ID', '')
         self.username = os.getenv('CKANEXT_UMAMI_ANALYTICS_USERNAME', '')
         self.password = os.getenv('CKANEXT_UMAMI_ANALYTICS_PASSWORD', '')
-        self.site_url = os.getenv('CKANEXT_SITE_URL', '')
+        self.site_url = os.getenv('CKAN_SITE_URL', '').replace('http://', '').replace('https://', '')
         if not self.umami_instance or not self.site_id:
             raise Exception('CKANEXT_UMAMI_ANALYTICS_URL and CKANEXT_UMAMI_ANALYTICS_SITE_ID must be set in the environment')
         # if username and password are set, get the token
