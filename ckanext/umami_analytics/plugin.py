@@ -38,8 +38,9 @@ class DownloadTrackingMiddleware(object):
         return self.app(environ, start_response)    
     def track_download(self, environ: Any):
         try:
-            log.info(environ)
-            headers = environ.get('HTTP_HEADERS', '')
+            headers = {
+                'User-Agent': environ.get('HTTP_USER_AGENT', ''),
+            }
             resource_id = environ.get('ckan.resource_id')
             user = environ.get('REMOTE_USER', 'anonymous')
             self.token = os.getenv('CKANEXT_UMAMI_ANALYTICS_TOKEN', '')
