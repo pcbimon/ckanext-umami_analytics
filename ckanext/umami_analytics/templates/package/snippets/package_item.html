@@ -1,0 +1,9 @@
+{% ckan_extends %}
+{% block heading_title %}
+<a data-umami-event="view-dataset" 
+   data-umami-event-dataset-name="{{ h.dataset_display_name(pkg) }}"
+   data-umami-event-dataset-id="{{ pkg.id }}"
+    href="{{ h.url_for('%s.read' % package.type, id=package.name) }}" title="{{ title }}">
+    {{title|truncate(80)}}
+</a>
+{% endblock %}
