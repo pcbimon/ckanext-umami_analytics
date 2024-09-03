@@ -5,6 +5,8 @@ import ckan.plugins.toolkit as toolkit
 import os
 import logging
 import requests
+
+from ckan.types import CKANApp
 log = logging.getLogger(__name__)
 def authenTracking(username: AnyStr, password: AnyStr, umami_instance: AnyStr) -> AnyStr:
     login_data = {
@@ -84,6 +86,10 @@ class DownloadTrackingMiddleware(object):
 class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
 
     plugins.implements(plugins.IConfigurer)
+    plugins.implements(plugins.IMiddleware, inherit=True)
+
+    def make_middleware(self, app: CKANApp, config: 'CKANConfig') -> CKANApp:
+        return DownloadTrackingMiddleware(app, config)
     # IConfigurer
 
     def update_config(self, config_: 'CKANConfig'):
