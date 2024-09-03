@@ -45,27 +45,6 @@ class DownloadTrackingMiddleware(object):
             self.password = os.getenv('CKANEXT_UMAMI_ANALYTICS_PASSWORD', '')
             self.site_id = os.getenv('CKANEXT_UMAMI_ANALYTICS_SITE_ID', '')
             self.site_url = os.getenv('CKAN_SITE_URL', '').replace('http://', '').replace('https://', '')
-            # Check self.token is not empty
-            if self.token == '':
-                # check if username and password are not empty
-                if self.username == '' or self.password == '':
-                    raise Exception('CKANEXT_UMAMI_ANALYTICS_USERNAME and CKANEXT_UMAMI_ANALYTICS_PASSWORD must be set in the environment')
-                # Get the token
-                self.token = authenTracking(self.username, self.password, self.umami_instance)
-                # set token to environment
-                os.environ['CKANEXT_UMAMI_ANALYTICS_TOKEN'] = self.token
-            else:
-                # verify token
-                if not verifyToken(self.token, self.umami_instance):
-                    # get the token again
-                    self.token = authenTracking(self.username, self.password, self.umami_instance)
-
-            # get token
-            token = self.token
-            # add token to headers Authorization
-            headers = {
-                'Authorization': f'Bearer {token}'
-            }
             download_path = environ.get('PATH_INFO', '')
             # get dataset id,resource id from path /dataset/{dataset_id}/resource/{resource_id}/download/{filename}
             dataset_id = download_path.split('/')[2]
@@ -90,7 +69,7 @@ class DownloadTrackingMiddleware(object):
             log.info('Tracking download')
             log.info(data)
             # Make the API call
-            response = requests.post(self.umami_instance+'/api/send',headers=headers, json=data)
+            response = requests.post(self.umami_instance+'/api/send',json=data)
             log.info(response.json())
             response.raise_for_status()
             log.info(f"Download tracked for resource: {resource_id} by user: {user}")
