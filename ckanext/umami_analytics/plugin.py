@@ -84,8 +84,11 @@ class DownloadTrackingMiddleware(object):
                 },
                 "type": "event"
             }
+            log.info('Tracking download')
+            log.info(data)
             # Make the API call
             response = requests.post(self.umami_instance+'/api/send',headers=headers, json=data)
+            log.info(response.json())
             response.raise_for_status()
             log.info(f"Download tracked for resource: {resource_id} by user: {user}")
         except Exception as e:
