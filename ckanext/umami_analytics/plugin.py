@@ -107,6 +107,7 @@ class UmamiAnalyticsPlugin(plugins.SingletonPlugin):
         if self.username and self.password:
             token = authenTracking(self.username, self.password, self.umami_instance)
             self.token = token
+            log.info('Umami Analytics token is set')
         
         # Inject the script into the <head> section
         script_tag = f'<script defer src="{self.umami_instance}/script.js" data-website-id="{self.site_id}"></script>'
